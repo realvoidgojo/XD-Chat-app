@@ -8,4 +8,4 @@ A modern, real-time chat application built with PHP, JavaScript, and PostgreSQL.
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)
 
 
-[https://60f61206-62cd-4f8b-b4f8-1967cba42acb-00-14d4pb3dbzacy.sisko.replit.dev/](https://60f61206-62cd-4f8b-b4f8-1967cba42acb-00-14d4pb3dbzacy.sisko.replit.dev/)
+[link](https://dbaf4e81-4770-4c38-b10c-c06db8875fd5-00-2alc9fdscx266.sisko.replit.dev:5000/)
