@@ -1,0 +1,62 @@
+run = "php -S 0.0.0.0:8000 -t ."
+modules = ["php-8.2", "nodejs-20", "web"]
+
+[packager]
+language = "php"
+
+[packager.features]
+enabledForHosting = false
+packageSearch = true
+guessImports = true
+
+[languages.php]
+pattern = "**/*.php"
+syntax = "php"
+
+[languages.php.languageServer]
+start = ["php", "-S", "localhost:8000", "-t", "."]
+
+[deployment]
+run = ["sh", "-c", "php -S 0.0.0.0:8000 -t ."]
+
+[[ports]]
+localPort = 8000
+externalPort = 80
+
+[env]
+REPLIT_DB_URL = "file:/home/runner/$REPL_SLUG/db.sqlite3"
+
+[unitTest]
+language = "php"
+
+[debugger]
+support = true
+
+[debugger.interactive]
+transport = "localhost:0"
+startCommand = ["dap-php"]
+
+[debugger.interactive.initializeMessage]
+command = "initialize"
+type = "request"
+
+[debugger.interactive.launchMessage]
+command = "launch"
+type = "request"
+program = "."
+stopOnEntry = true
+
+[interpreter]
+command = "php"
+
+[workflows]
+runButton = "Run PHP Server"
+
+[[workflows.workflow]]
+name = "Run PHP Server"
+author = 16222441
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "php -S 0.0.0.0:8000 -t ."

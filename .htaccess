@@ -1,0 +1,186 @@
+# XD Chat App - Security & Routing Configuration
+# ================================================
+
+# Enable Rewrite Engine
+RewriteEngine On
+
+# Security Headers
+# ================
+<IfModule mod_headers.c>
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options nosniff
+    
+    # Prevent clickjacking
+    Header always set X-Frame-Options DENY
+    
+    # Enable XSS protection
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Content Security Policy
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com fonts.googleapis.com; font-src 'self' fonts.gstatic.com cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self';"
+    
+    # Remove server information
+    Header unset Server
+    Header unset X-Powered-By
+    
+    # HSTS (if using HTTPS)
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+</IfModule>
+
+# Hide sensitive files and directories
+# ====================================
+<Files ~ "\.(env|log|ini|conf|sql|bak|backup)$">
+    Require all denied
+</Files>
+
+# Hide dot files and directories
+<Files ".*">
+    Require all denied
+</Files>
+
+# Protect specific directories (alternative to DirectoryMatch)
+RedirectMatch 404 /config/.*
+RedirectMatch 404 /includes/.*
+RedirectMatch 404 /models/.*
+RedirectMatch 404 /controllers/.*
+RedirectMatch 404 /logs/.*
+RedirectMatch 404 /database/.*
+
+# Prevent access to PHP files in uploads directory
+<FilesMatch "\.php$">
+    <If "%{REQUEST_URI} =~ m#^/app/uploads/#">
+        Require all denied
+    </If>
+</FilesMatch>
+
+# Block common attack patterns
+# ============================
+<IfModule mod_rewrite.c>
+    # Block SQL injection attempts
+    RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+    RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
+    RewriteCond %{QUERY_STRING} (\<|%3C).*(\>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} (union|select|insert|drop|delete|update|cast|create|declare|exec) [NC]
+    RewriteRule ^(.*)$ - [F,L]
+    
+    # Block file injection attempts
+    RewriteCond %{QUERY_STRING} \.\.\/ [NC,OR]
+    RewriteCond %{QUERY_STRING} boot\.ini [NC,OR]
+    RewriteCond %{QUERY_STRING} tag\= [NC]
+    RewriteRule ^(.*)$ - [F,L]
+</IfModule>
+
+# URL Routing
+# ===========
+<IfModule mod_rewrite.c>
+    # Chat routes
+    RewriteRule ^chat/([0-9]+)/?$ chat.php?user_id=$1 [L,QSA]
+    RewriteRule ^message/([0-9]+)/?$ message.php?user_id=$1 [L,QSA]
+    
+    # User routes
+    RewriteRule ^users/?$ users.php [L,QSA]
+    RewriteRule ^profile/([0-9]+)/?$ profile.php?user_id=$1 [L,QSA]
+    
+    # Auth routes
+    RewriteRule ^login/?$ login.php [L,QSA]
+    RewriteRule ^signup/?$ index.php [L,QSA]
+    RewriteRule ^logout/?$ api/logout.php [L,QSA]
+    
+    # API routes
+    RewriteRule ^api/([a-zA-Z0-9_-]+)/?$ api/$1.php [L,QSA]
+    
+    # Redirect old routes for backward compatibility
+    RewriteRule ^message-([0-9]+)/?$ chat/$1 [R=301,L]
+    
+    # Handle missing trailing slash for directories
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_URI} !(.*)/$
+    RewriteRule ^(.*)$ $1/ [R=301,L]
+</IfModule>
+
+# Performance & Caching
+# ======================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    
+    # CSS and JavaScript
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType text/javascript "access plus 1 week"
+    
+    # Fonts
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+    
+    # Default
+    ExpiresDefault "access plus 1 day"
+</IfModule>
+
+# Compression
+# ===========
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# Error Pages
+# ===========
+ErrorDocument 403 /app/errors/403.php
+ErrorDocument 404 /app/errors/404.php
+ErrorDocument 500 /app/errors/500.php
+
+# Disable Directory Browsing
+Options -Indexes
+
+# Prevent image hotlinking (optional)
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP_REFERER} !^$
+    RewriteCond %{HTTP_REFERER} !^https?://(www\.)?localhost [NC]
+    RewriteCond %{REQUEST_URI} \.(jpg|jpeg|png|gif|webp)$ [NC]
+    RewriteRule \.(jpg|jpeg|png|gif|webp)$ - [F]
+</IfModule>
+
+# PHP Security Settings
+# =====================
+<IfModule mod_php7.c>
+    php_value expose_php Off
+    php_value display_errors Off
+    php_value log_errors On
+    php_value max_execution_time 30
+    php_value max_input_time 30
+    php_value memory_limit 128M
+    php_value post_max_size 2M
+    php_value upload_max_filesize 1M
+    php_value max_file_uploads 1
+</IfModule>
+
+# Rate Limiting (if mod_evasive is available)
+# ===========================================
+<IfModule mod_evasive20.c>
+    DOSHashTableSize    2048
+    DOSPageCount        20
+    DOSSiteCount        50
+    DOSPageInterval     1
+    DOSSiteInterval     1
+    DOSBlockingPeriod   300
+</IfModule> 
