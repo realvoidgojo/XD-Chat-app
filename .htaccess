@@ -55,12 +55,21 @@ RedirectMatch 404 /controllers/.*
 RedirectMatch 404 /logs/.*
 RedirectMatch 404 /database/.*
 
-# Prevent access to PHP files in uploads directory
-<FilesMatch "\.php$">
-    <If "%{REQUEST_URI} =~ m#^/uploads/#">
+# Allow access to uploads directory for images only
+<Directory "/var/www/html/uploads">
+    Options -Indexes
+    Require all granted
+    
+    # Block PHP execution in uploads
+    <FilesMatch "\.php$">
         Require all denied
-    </If>
-</FilesMatch>
+    </FilesMatch>
+    
+    # Allow only image files
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp)$">
+        Require all granted
+    </FilesMatch>
+</Directory>
 
 # Block common attack patterns
 # ============================
@@ -151,14 +160,6 @@ RedirectMatch 404 /database/.*
 
 # Disable Directory Browsing
 Options -Indexes
-
-# Prevent image hotlinking (optional)
-<IfModule mod_rewrite.c>
-    RewriteCond %{HTTP_REFERER} !^$
-    RewriteCond %{HTTP_REFERER} !^https?://(www\.)?localhost [NC]
-    RewriteCond %{REQUEST_URI} \.(jpg|jpeg|png|gif|webp)$ [NC]
-    RewriteRule \.(jpg|jpeg|png|gif|webp)$ - [F]
-</IfModule>
 
 # PHP Security Settings
 # =====================
