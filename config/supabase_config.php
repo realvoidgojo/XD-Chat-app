@@ -17,12 +17,12 @@ if (file_exists(__DIR__ . '/../.env')) {
 }
 
 // Supabase Database Configuration
-// These can be set as environment variables in Replit
-define("SUPABASE_HOST", $_ENV['SUPABASE_HOST'] ?? "db.your-project-ref.supabase.co");
-define("SUPABASE_PORT", $_ENV['SUPABASE_PORT'] ?? "5432");
-define("SUPABASE_USERNAME", $_ENV['SUPABASE_USERNAME'] ?? "postgres");
-define("SUPABASE_PASSWORD", $_ENV['SUPABASE_PASSWORD'] ?? "your-password");
-define("SUPABASE_DATABASE", $_ENV['SUPABASE_DATABASE'] ?? "postgres");
+// These can be set as environment variables in production (Render)
+define("SUPABASE_HOST", $_ENV['SUPABASE_HOST'] ?? getenv('SUPABASE_HOST') ?? "db.your-project-ref.supabase.co");
+define("SUPABASE_PORT", $_ENV['SUPABASE_PORT'] ?? getenv('SUPABASE_PORT') ?? "5432");
+define("SUPABASE_USERNAME", $_ENV['SUPABASE_USERNAME'] ?? getenv('SUPABASE_USERNAME') ?? "postgres");
+define("SUPABASE_PASSWORD", $_ENV['SUPABASE_PASSWORD'] ?? getenv('SUPABASE_PASSWORD') ?? "your-password");
+define("SUPABASE_DATABASE", $_ENV['SUPABASE_DATABASE'] ?? getenv('SUPABASE_DATABASE') ?? "postgres");
 
 // Update the main database configuration
 if (!defined('DB_HOST')) {

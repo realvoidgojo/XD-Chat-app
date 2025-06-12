@@ -4,13 +4,18 @@
  * Updated for Supabase PostgreSQL deployment
  */
 
+// Load supabase configuration first
+require_once __DIR__ . '/supabase_config.php';
+
 // Database configuration for PostgreSQL (Supabase)
-// Using environment variables from Replit Secrets
-define("DB_HOST", $_ENV['SUPABASE_HOST'] ?? "localhost");
-define("DB_PORT", $_ENV['SUPABASE_PORT'] ?? "6543");
-define("DB_USERNAME", $_ENV['SUPABASE_USERNAME'] ?? "");
-define("DB_PASSWORD", $_ENV['SUPABASE_PASSWORD'] ?? "");
-define("DB_NAME", $_ENV['SUPABASE_DATABASE'] ?? "postgres");
+// These will be defined by supabase_config.php or environment variables
+if (!defined('DB_HOST')) {
+    define("DB_HOST", $_ENV['SUPABASE_HOST'] ?? getenv('SUPABASE_HOST') ?? "localhost");
+    define("DB_PORT", $_ENV['SUPABASE_PORT'] ?? getenv('SUPABASE_PORT') ?? "5432");
+    define("DB_USERNAME", $_ENV['SUPABASE_USERNAME'] ?? getenv('SUPABASE_USERNAME') ?? "");
+    define("DB_PASSWORD", $_ENV['SUPABASE_PASSWORD'] ?? getenv('SUPABASE_PASSWORD') ?? "");
+    define("DB_NAME", $_ENV['SUPABASE_DATABASE'] ?? getenv('SUPABASE_DATABASE') ?? "postgres");
+}
 define("DB_CHARSET", "utf8");
 
 // Application constants
@@ -53,7 +58,14 @@ function getDatabaseConnection() {
             $pdo->exec("SET NAMES 'UTF8'");
             
         } catch (PDOException $e) {
-            error_log("Database connection failed: " . $e->getMessage());
+            $error_msg = "Database connection failed: " . $e->getMessage();
+            $debug_info = " | Host: " . DB_HOST . " | Port: " . DB_PORT . " | Database: " . DB_NAME . " | User: " . DB_USERNAME;
+            error_log($error_msg . $debug_info);
+            
+            // More detailed error for debugging in non-production
+            if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+                throw new Exception($error_msg . $debug_info);
+            }
             throw new Exception("Database connection failed. Please try again later.");
         }
     }
