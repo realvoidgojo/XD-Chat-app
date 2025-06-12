@@ -2,18 +2,25 @@ services:
   - type: web
     name: xd-chat-app
     env: docker
-    repo: https://github.com/yourusername/XD-Chat-app.git # Replace with your actual repo URL
+    repo: https://github.com/realvoidgojo/XD-Chat-app
     dockerfilePath: ./Dockerfile
-    plan: free
+    healthCheckPath: /health.php
     envVars:
       - key: SUPABASE_HOST
-        sync: false # You'll set this manually in Render dashboard
-      - key: SUPABASE_PORT
-        value: 5432
+        sync: false
       - key: SUPABASE_USERNAME
-        sync: false # You'll set this manually in Render dashboard
+        sync: false
       - key: SUPABASE_PASSWORD
-        sync: false # You'll set this manually in Render dashboard
+        sync: false
       - key: SUPABASE_DATABASE
-        value: postgres
-    healthCheckPath: / 
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+    disk:
+      name: uploads
+      mountPath: /var/www/html/uploads
+      sizeGB: 1

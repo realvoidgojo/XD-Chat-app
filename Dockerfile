@@ -49,4 +49,4 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
 EXPOSE 80
 
 # Start Apache
-CMD ["apache2-foreground"] 
+CMD ["apache2-foreground"]
