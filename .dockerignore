@@ -38,7 +38,7 @@ replit.nix
 # Docker
 Dockerfile
 .dockerignore
-docker/
+# docker/ - commented out because we need docker/000-default.conf for Apache config
 
 # Environment files (these should be set via Render environment variables)
 .env
