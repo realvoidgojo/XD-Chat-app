@@ -44,19 +44,17 @@ if (session_status() === PHP_SESSION_NONE) {
     }
 }
 
-// Set security headers AFTER session initialization
+// Set additional security headers only if not already set by .htaccess
+// Note: Most security headers are now handled by .htaccess for better performance
 if (!headers_sent()) {
-    header("X-Content-Type-Options: nosniff");
-    header("X-Frame-Options: DENY");
-    header("X-XSS-Protection: 1; mode=block");
-    header("Referrer-Policy: strict-origin-when-cross-origin");
-    header("Permissions-Policy: geolocation=(), microphone=(), camera=()");
-    
     // Only set content-type for non-API requests
     $requestUri = $_SERVER['REQUEST_URI'] ?? '';
     if (strpos($requestUri, '/php/') === false && strpos($requestUri, '/api/') === false) {
         header("Content-Type: text/html; charset=UTF-8");
     }
+    
+    // Set permissions policy (not handled by .htaccess)
+    header("Permissions-Policy: geolocation=(), microphone=(), camera=()");
 }
 
 /**

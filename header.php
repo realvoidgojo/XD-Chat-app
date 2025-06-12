@@ -7,10 +7,8 @@
   <meta name="author" content="XD Chat Team">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   
-  <!-- Security Headers -->
+  <!-- Content Security Policy (valid as meta tag) -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com fonts.googleapis.com; font-src 'self' fonts.gstatic.com cdnjs.cloudflare.com; img-src 'self' data:;">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
   
   <title><?php echo defined('PAGE_TITLE') ? PAGE_TITLE : 'XD Chat App'; ?></title>
   

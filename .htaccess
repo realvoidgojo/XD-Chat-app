@@ -30,6 +30,12 @@ RewriteEngine On
     # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 </IfModule>
 
+# Error Pages
+# ===========
+ErrorDocument 403 /error.php?code=403
+ErrorDocument 404 /error.php?code=404
+ErrorDocument 500 /error.php?code=500
+
 # Hide sensitive files and directories
 # ====================================
 <Files ~ "\.(env|log|ini|conf|sql|bak|backup)$">
@@ -51,7 +57,7 @@ RedirectMatch 404 /database/.*
 
 # Prevent access to PHP files in uploads directory
 <FilesMatch "\.php$">
-    <If "%{REQUEST_URI} =~ m#^/app/uploads/#">
+    <If "%{REQUEST_URI} =~ m#^/uploads/#">
         Require all denied
     </If>
 </FilesMatch>
@@ -142,12 +148,6 @@ RedirectMatch 404 /database/.*
     AddOutputFilterByType DEFLATE application/x-javascript
     AddOutputFilterByType DEFLATE application/json
 </IfModule>
-
-# Error Pages
-# ===========
-ErrorDocument 403 /app/errors/403.php
-ErrorDocument 404 /app/errors/404.php
-ErrorDocument 500 /app/errors/500.php
 
 # Disable Directory Browsing
 Options -Indexes
