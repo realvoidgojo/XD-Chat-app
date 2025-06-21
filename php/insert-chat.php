@@ -1,19 +1,14 @@
 <?php 
-/**
- * Insert Chat Message API
- * Sends a new message between users
- */
-
-// Include initialization
+// Send message
 require_once "../includes/init.php";
 
-// Check if user is authenticated
+// Check auth
 if (!Security::isAuthenticated()) {
     echo "error";
     exit;
 }
 
-// Verify CSRF token
+// Check CSRF
 if (!Security::verifyCSRFToken($_POST['csrf_token'] ?? '')) {
     echo "error";
     exit;
@@ -23,20 +18,20 @@ $outgoing_id = $_SESSION['unique_id'];
 $incoming_id = Security::sanitizeInput($_POST['incoming_id'] ?? '');
 $message = Security::sanitizeInput($_POST['message'] ?? '');
 
-// Validate input
+// Check input
 if (empty($incoming_id) || empty($message)) {
     echo "error";
     exit;
 }
 
-// Check message length
+// Check length
 if (strlen($message) > 1000) {
     echo "error";
     exit;
 }
 
 try {
-    // Verify that the incoming user exists and is active
+    // User exists?
     $stmt = $pdo->prepare("SELECT unique_id FROM users WHERE unique_id = ? AND is_active = TRUE");
     $stmt->execute([$incoming_id]);
     
@@ -45,7 +40,7 @@ try {
         exit;
     }
     
-    // Insert the message (PostgreSQL compatible)
+    // Insert message
     $sql = "INSERT INTO messages (incoming_msg_id, outgoing_msg_id, msg, created_at) 
             VALUES (?, ?, ?, CURRENT_TIMESTAMP)";
     

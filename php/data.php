@@ -1,12 +1,7 @@
 <?php
-/**
- * User Data Formatting
- * Formats user data for display in users list
- * $user array is passed from parent file
- */
-
+// Format user data for display
 try {
-    // Get the last message between current user and this user (PostgreSQL compatible)
+    // Get last message
     $sql2 = "SELECT * FROM messages 
              WHERE (incoming_msg_id = ? OR outgoing_msg_id = ?) 
              AND (outgoing_msg_id = ? OR incoming_msg_id = ?) 
@@ -26,11 +21,11 @@ try {
         $you = "";
     }
     
-    // Determine offline status - more comprehensive check
+    // Check online status
     $isOnline = true;
     $currentTime = time();
     
-    // Use the best available timestamp for determining online status
+    // Get best timestamp
     $lastActivityTime = null;
     if (!empty($user['last_activity'])) {
         $lastActivityTime = strtotime($user['last_activity']);
@@ -39,27 +34,27 @@ try {
     } elseif (!empty($user['created_at'])) {
         $lastActivityTime = strtotime($user['created_at']);
     } else {
-        // Default to current time minus 10 minutes to mark as offline
+        // Default to offline
         $lastActivityTime = $currentTime - 600;
     }
     
-    // Consider user offline if:
-    // 1. Status is explicitly "Offline"
-    // 2. Last activity was more than 5 minutes ago
-    // 3. Status is "Away" and last activity was more than 2 minutes ago
+    // Mark offline if:
+    // 1. Status is "Offline"
+    // 2. Inactive > 5 minutes
+    // 3. Away > 2 minutes
     if ($user['status'] === "Offline" || 
         ($currentTime - $lastActivityTime) > 300 || // 5 minutes
-        ($user['status'] === "Away" && ($currentTime - $lastActivityTime) > 120)) { // 2 minutes for Away
+        ($user['status'] === "Away" && ($currentTime - $lastActivityTime) > 120)) { // 2 minutes
         $isOnline = false;
     }
     
     $offline = $isOnline ? "" : "offline";
     $statusText = $isOnline ? $user['status'] : "Offline";
     
-    // Don't show current user in the list
+    // Hide current user
     $hid_me = ($outgoing_id == $user['unique_id']) ? "hide" : "";
     
-    // Build the output HTML with proper escaping
+    // Build HTML
     $output .= '<a href="chat.php?user_id=' . Security::escapeOutput($user['unique_id']) . '" class="user-item ' . $hid_me . '">
                 <div class="content">
                     <img src="uploads/' . Security::escapeOutput($user['img']) . '" alt="Profile Picture" onerror="this.src=\'uploads/default-avatar.png\'">
@@ -78,7 +73,7 @@ try {
             
 } catch (PDOException $e) {
     error_log("Data formatting error: " . $e->getMessage());
-    // Continue with basic user info if message query fails
+    // Basic user info fallback
     $output .= '<a href="chat.php?user_id=' . Security::escapeOutput($user['unique_id']) . '" class="user-item">
                 <div class="content">
                     <img src="uploads/' . Security::escapeOutput($user['img']) . '" alt="Profile Picture" onerror="this.src=\'uploads/default-avatar.png\'">

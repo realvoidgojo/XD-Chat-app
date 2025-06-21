@@ -1,8 +1,4 @@
-/**
- * Signup Form Handler
- * XD Chat App
- */
-
+// Signup form handler
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector("#signupForm");
     const continueBtn = form.querySelector("input[type='submit']");
@@ -13,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // Prevent default form submission
+    // Prevent default submit
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         handleSubmit();
@@ -22,16 +18,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleSubmit() {
         console.log('Signup form submission started');
         
-        // Clear previous messages
+        // Clear messages
         hideError();
         
-        // Client-side validation
+        // Validate form
         if (!validateForm()) {
             console.log('Form validation failed');
             return;
         }
         
-        // Disable button to prevent double submission
+        // Disable button
         continueBtn.disabled = true;
         continueBtn.value = 'Creating Account...';
         
@@ -44,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => {
             console.log('Response status:', response.status);
             
-            // Check if response is ok
+            // Check response
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -61,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     console.log('Registration successful! Redirecting...');
                     
-                    // Show success feedback briefly then redirect
+                    // Show success
                     continueBtn.value = 'Success! Redirecting...';
                     continueBtn.style.background = '#4CAF50';
                     
@@ -77,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('JSON parsing error:', e);
                 console.log('Response text:', responseText);
                 
-                // Check if it's a simple text response indicating success
+                // Check simple success
                 if (responseText.trim() === 'success') {
                     continueBtn.value = 'Success! Redirecting...';
                     continueBtn.style.background = '#4CAF50';

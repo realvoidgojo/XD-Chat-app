@@ -1,23 +1,17 @@
 <?php 
-/**
- * Users List Page
- * XD Chat App
- */
-
-// Initialize application (session, database, security)
+// Users list page
 require_once 'includes/init.php';
 
-// Require authentication
+// Need auth
 Security::requireAuth();
 
-// Get current user ID
 $currentUserId = $_SESSION['unique_id'];
 
 // Include User model
 require_once 'models/User.php';
 $userModel = new User();
 
-// Get current user info and all other users
+// Get users
 try {
     $currentUser = $userModel->getById($currentUserId);
     $users = $userModel->getAllExcept($currentUserId);
@@ -32,10 +26,9 @@ try {
     $users = [];
 }
 
-// Update user status to online
+// Set status online
 $userModel->updateStatus($currentUserId, "Active now");
 
-// Define page title
 define('PAGE_TITLE', 'Users - XD Chat App');
 ?>
 
@@ -95,7 +88,7 @@ define('PAGE_TITLE', 'Users - XD Chat App');
     </section>
   </div>
 
-  <!-- Profile Modal -->
+  <!-- Profile modal -->
   <div class="profile-modal" id="profileModal" style="display: none;">
     <div class="modal-content">
       <span class="close-modal">&times;</span>
@@ -147,7 +140,7 @@ define('PAGE_TITLE', 'Users - XD Chat App');
   <script src="javascript/profile.js"></script>
   
   <script>
-    // Profile modal functionality
+    // Profile modal handlers
     document.querySelector('.profile-btn').addEventListener('click', function() {
       document.getElementById('profileModal').style.display = 'block';
     });

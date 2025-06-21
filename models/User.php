@@ -1,9 +1,5 @@
 <?php
-/**
- * User Model
- * XD Chat App
- */
-
+// User model
 class User {
     private $pdo;
     
@@ -12,9 +8,7 @@ class User {
         $this->pdo = $pdo;
     }
     
-    /**
-     * Create a new user
-     */
+    // Create user
     public function create($data) {
         try {
             // Validate input
@@ -23,18 +17,18 @@ class User {
                 return ['success' => false, 'errors' => $errors];
             }
             
-            // Check if email already exists
+            // Email exists?
             if ($this->emailExists($data['email'])) {
                 return ['success' => false, 'errors' => ['Email already exists']];
             }
             
-            // Generate unique ID
+            // Generate ID
             $uniqueId = $this->generateUniqueId();
             
             // Hash password
             $hashedPassword = Security::hashPassword($data['password']);
             
-            // Prepare SQL (Updated for PostgreSQL)
+            // Insert user
             $sql = "INSERT INTO users (unique_id, fname, lname, email, password, img, status, created_at) 
                     VALUES (?, ?, ?, ?, ?, ?, 'Active now', CURRENT_TIMESTAMP)";
             
@@ -60,12 +54,10 @@ class User {
         }
     }
     
-    /**
-     * Authenticate user
-     */
+    // Authenticate user
     public function authenticate($email, $password) {
         try {
-            // Rate limiting check
+            // Check rate limit
             if (!Security::checkRateLimit($email)) {
                 return ['success' => false, 'error' => 'Too many login attempts. Please try again later.'];
             }
@@ -76,7 +68,7 @@ class User {
             $user = $stmt->fetch();
             
             if ($user && Security::verifyPassword($password, $user['password'])) {
-                // Clear rate limit on successful login
+                // Clear rate limit
                 Security::clearRateLimit($email);
                 
                 // Update last login
@@ -84,7 +76,7 @@ class User {
                 
                 return ['success' => true, 'user' => $user];
             } else {
-                // Record failed attempt
+                // Record fail
                 Security::recordFailedAttempt($email);
                 return ['success' => false, 'error' => 'Invalid email or password'];
             }
@@ -95,9 +87,7 @@ class User {
         }
     }
     
-    /**
-     * Get user by unique ID
-     */
+    // Get user by ID
     public function getById($uniqueId) {
         try {
             $sql = "SELECT * FROM users WHERE unique_id = ? AND is_active = TRUE";
@@ -110,9 +100,7 @@ class User {
         }
     }
     
-    /**
-     * Get all users except current user
-     */
+    // Get all users
     public function getAllExcept($currentUserId) {
         try {
             $sql = "SELECT unique_id, fname, lname, img, status FROM users WHERE unique_id != ? AND is_active = TRUE ORDER BY fname ASC";
@@ -125,13 +113,11 @@ class User {
         }
     }
     
-    /**
-     * Search users
-     */
+    // Search users
     public function search($searchTerm, $currentUserId) {
         try {
             $searchTerm = '%' . $searchTerm . '%';
-            // Updated for PostgreSQL - use || for concatenation and ILIKE for case-insensitive search
+            // Use ILIKE for case-insensitive
             $sql = "SELECT unique_id, fname, lname, img, status FROM users 
                     WHERE (fname ILIKE ? OR lname ILIKE ? OR (fname || ' ' || lname) ILIKE ?) 
                     AND unique_id != ? AND is_active = TRUE ORDER BY fname ASC";
@@ -144,9 +130,7 @@ class User {
         }
     }
     
-    /**
-     * Update user status
-     */
+    // Update status
     public function updateStatus($uniqueId, $status) {
         try {
             $sql = "UPDATE users SET status = ?, last_activity = CURRENT_TIMESTAMP WHERE unique_id = ?";

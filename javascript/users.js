@@ -6,7 +6,7 @@ const searchInput = document.querySelector("#searchInput"),
 
 let searchActive = false;
 
-// Search button functionality
+// Search button
 if (searchBtn) {
   searchBtn.onclick = () => {
     const searchTerm = searchInput.value.trim();
@@ -16,7 +16,7 @@ if (searchBtn) {
   };
 }
 
-// Clear search functionality
+// Clear search
 if (clearSearchBtn) {
   clearSearchBtn.onclick = () => {
     searchInput.value = "";
@@ -26,7 +26,7 @@ if (clearSearchBtn) {
   };
 }
 
-// Search input functionality
+// Search input
 if (searchInput) {
   searchInput.onkeyup = (e) => {
     let searchTerm = searchInput.value.trim();
@@ -35,11 +35,11 @@ if (searchInput) {
       searchActive = true;
       clearSearchBtn.style.display = "block";
       
-      // Search on Enter key
+      // Enter key search
       if (e.key === 'Enter') {
         performSearch(searchTerm);
       }
-      // Auto-search after typing (with debounce)
+      // Auto-search with debounce
       clearTimeout(searchInput.searchTimeout);
       searchInput.searchTimeout = setTimeout(() => {
         performSearch(searchTerm);
@@ -102,7 +102,7 @@ function loadUsers() {
 function updateOnlineCount() {
   if (!onlineCountElement) return;
   
-  // Count online users from the loaded user list
+  // Count online users
   const userItems = usersList.querySelectorAll('.user-item:not(.hide)');
   let onlineCount = 0;
   
@@ -113,7 +113,7 @@ function updateOnlineCount() {
     }
   });
   
-  // Update the display
+  // Update display
   if (onlineCount === 0) {
     onlineCountElement.textContent = 'No users online';
   } else if (onlineCount === 1) {
@@ -126,14 +126,14 @@ function updateOnlineCount() {
 // Load users initially
 loadUsers();
 
-// Refresh users list every 5 seconds for better performance
+// Refresh every 5 seconds
 setInterval(() => {
   if (!searchActive) {
     loadUsers();
   }
 }, 5000);
 
-// Update current user status every 30 seconds
+// Update status every 30s
 setInterval(() => {
   fetch('php/update-status.php', {
     method: 'POST',
@@ -146,10 +146,10 @@ setInterval(() => {
   });
 }, 30000);
 
-// Handle page visibility change to update user status
+// Handle page visibility
 document.addEventListener('visibilitychange', function() {
   if (document.hidden) {
-    // User is away/inactive
+    // User away
     fetch('php/update-status.php', {
       method: 'POST',
       headers: {
@@ -160,7 +160,7 @@ document.addEventListener('visibilitychange', function() {
       console.log('Status update failed:', error);
     });
   } else {
-    // User is back/active
+    // User back
     fetch('php/update-status.php', {
       method: 'POST',
       headers: {
@@ -170,14 +170,14 @@ document.addEventListener('visibilitychange', function() {
     }).catch(error => {
       console.log('Status update failed:', error);
     });
-    // Reload users when coming back
+    // Reload users
     if (!searchActive) {
       loadUsers();
     }
   }
 });
 
-// Update status when user leaves the page
+// Update on page leave
 window.addEventListener('beforeunload', function() {
   navigator.sendBeacon('php/update-status.php', 'status=Offline');
 });

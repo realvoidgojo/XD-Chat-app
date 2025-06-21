@@ -1,19 +1,12 @@
 <?php 
-/**
- * Chat Page
- * XD Chat App
- */
-
-// Initialize application (session, database, security)
+// Chat page
 require_once 'includes/init.php';
 
-// Require authentication
+// Need auth for chat
 Security::requireAuth();
 
-// Get current user
+// Get users
 $currentUserId = $_SESSION['unique_id'];
-
-// Get target user ID from URL parameter
 $targetUserId = $_GET['user_id'] ?? '';
 
 if (empty($targetUserId)) {
@@ -21,7 +14,7 @@ if (empty($targetUserId)) {
 }
 
 try {
-    // Get target user information
+    // Find target user
     $stmt = $pdo->prepare("SELECT * FROM users WHERE unique_id = ? AND is_active = TRUE");
     $stmt->execute([$targetUserId]);
     $targetUser = $stmt->fetch();
@@ -35,7 +28,6 @@ try {
     safeRedirect("users.php");
 }
 
-// Define page title
 define('PAGE_TITLE', 'Chat with ' . $targetUser['fname'] . ' - XD Chat App');
 ?>
 
@@ -73,7 +65,7 @@ define('PAGE_TITLE', 'Chat with ' . $targetUser['fname'] . ' - XD Chat App');
     </section>
   </div>
 
-  <!-- User Info Modal -->
+  <!-- User info modal -->
   <div class="user-info-modal" id="userInfoModal" style="display: none;">
     <div class="modal-content">
       <span class="close-modal">&times;</span>
@@ -91,7 +83,7 @@ define('PAGE_TITLE', 'Chat with ' . $targetUser['fname'] . ' - XD Chat App');
   <script src="javascript/chat.js"></script>
 
   <script>
-    // User info modal functionality
+    // Modal handlers
     document.querySelector('.user-info-btn').addEventListener('click', function() {
       document.getElementById('userInfoModal').style.display = 'block';
     });

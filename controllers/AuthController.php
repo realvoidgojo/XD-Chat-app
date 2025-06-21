@@ -1,9 +1,5 @@
 <?php
-/**
- * Authentication Controller
- * XD Chat App
- */
-
+// Auth controller
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/Security.php';
 require_once __DIR__ . '/../models/User.php';
@@ -16,26 +12,24 @@ class AuthController {
         $this->user = new User();
     }
     
-    /**
-     * Handle user registration
-     */
+    // Handle signup
     public function signup() {
         header('Content-Type: application/json');
         
         try {
-            // Check if user is already logged in
+            // Already logged in?
             if (Security::isAuthenticated()) {
                 echo json_encode(['success' => false, 'error' => 'Already logged in']);
                 return;
             }
             
-            // Verify CSRF token
+            // Check CSRF
             if (!isset($_POST['csrf_token']) || !Security::verifyCSRFToken($_POST['csrf_token'])) {
                 echo json_encode(['success' => false, 'error' => 'Invalid security token']);
                 return;
             }
             
-            // Validate required fields
+            // Check required fields
             $requiredFields = ['fname', 'lname', 'email', 'password'];
             foreach ($requiredFields as $field) {
                 if (!isset($_POST[$field]) || empty(trim($_POST[$field]))) {
@@ -44,32 +38,32 @@ class AuthController {
                 }
             }
             
-            // Sanitize input
+            // Clean input
             $data = [
                 'fname' => Security::sanitizeInput($_POST['fname']),
                 'lname' => Security::sanitizeInput($_POST['lname']),
                 'email' => Security::sanitizeInput($_POST['email'], 'email'),
-                'password' => $_POST['password'] // Don't sanitize password, just validate
+                'password' => $_POST['password'] // Don't sanitize password
             ];
             
-            // Handle file upload
+            // Check file upload
             if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
                 echo json_encode(['success' => false, 'error' => 'Profile image is required']);
                 return;
             }
             
-            // Validate uploaded file
+            // Validate file
             $fileErrors = Security::validateUploadedFile($_FILES['image']);
             if (!empty($fileErrors)) {
                 echo json_encode(['success' => false, 'error' => implode(', ', $fileErrors)]);
                 return;
             }
             
-            // Generate secure filename and move file
+            // Save file
             $newFilename = Security::generateSecureFilename($_FILES['image']['name']);
             $uploadPath = UPLOAD_DIR . $newFilename;
             
-            // Create upload directory if it doesn't exist
+            // Create upload dir
             if (!is_dir(UPLOAD_DIR)) {
                 mkdir(UPLOAD_DIR, 0755, true);
             }
@@ -89,12 +83,12 @@ class AuthController {
                 $_SESSION['user_id'] = $result['user_id'];
                 $_SESSION['authenticated'] = true;
                 
-                // Regenerate session ID for security
+                // Refresh session
                 session_regenerate_id(true);
                 
                 echo json_encode(['success' => true, 'redirect' => 'users.php']);
             } else {
-                // Delete uploaded file if user creation failed
+                // Clean up file
                 if (file_exists($uploadPath)) {
                     unlink($uploadPath);
                 }
@@ -111,26 +105,24 @@ class AuthController {
         }
     }
     
-    /**
-     * Handle user login
-     */
+    // Handle login
     public function login() {
         header('Content-Type: application/json');
         
         try {
-            // Check if user is already logged in
+            // Already logged in?
             if (Security::isAuthenticated()) {
                 echo json_encode(['success' => false, 'error' => 'Already logged in']);
                 return;
             }
             
-            // Verify CSRF token
+            // Check CSRF
             if (!isset($_POST['csrf_token']) || !Security::verifyCSRFToken($_POST['csrf_token'])) {
                 echo json_encode(['success' => false, 'error' => 'Invalid security token']);
                 return;
             }
             
-            // Validate required fields
+            // Check fields
             if (!isset($_POST['email']) || !isset($_POST['password']) || 
                 empty(trim($_POST['email'])) || empty(trim($_POST['password']))) {
                 echo json_encode(['success' => false, 'error' => 'Email and password are required']);
@@ -140,13 +132,13 @@ class AuthController {
             $email = Security::sanitizeInput($_POST['email'], 'email');
             $password = $_POST['password'];
             
-            // Validate email format
+            // Valid email?
             if (!Security::validateInput($email, 'email')) {
                 echo json_encode(['success' => false, 'error' => 'Invalid email format']);
                 return;
             }
             
-            // Authenticate user
+            // Try login
             $result = $this->user->authenticate($email, $password);
             
             if ($result['success']) {
@@ -154,10 +146,10 @@ class AuthController {
                 $_SESSION['user_id'] = $result['user']['unique_id'];
                 $_SESSION['authenticated'] = true;
                 
-                // Update user status
+                // Set online status
                 $this->user->updateStatus($result['user']['unique_id'], 'Active now');
                 
-                // Regenerate session ID for security
+                // Refresh session
                 session_regenerate_id(true);
                 
                 echo json_encode(['success' => true, 'redirect' => 'users.php']);
@@ -171,20 +163,18 @@ class AuthController {
         }
     }
     
-    /**
-     * Handle user logout
-     */
+    // Handle logout
     public function logout() {
         try {
             if (Security::isAuthenticated()) {
-                // Update user status to offline
+                // Set offline status
                 $this->user->updateStatus($_SESSION['user_id'], 'Offline now');
             }
             
-            // Clear session and logout
+            // Clear session
             Security::logout();
             
-            // Redirect to login page
+            // Back to login
             header('Location: login.php');
             exit;
             
@@ -195,9 +185,7 @@ class AuthController {
         }
     }
     
-    /**
-     * Check authentication status
-     */
+    // Check auth status
     public function checkAuth() {
         header('Content-Type: application/json');
         
@@ -208,7 +196,7 @@ class AuthController {
     }
 }
 
-// Handle AJAX requests
+// Handle requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller = new AuthController();
     

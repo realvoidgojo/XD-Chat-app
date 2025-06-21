@@ -1,34 +1,27 @@
 <?php
-/**
- * User Registration Handler
- * XD Chat App
- */
-
-// Start output buffering for clean JSON output
+// User signup handler
 ob_start();
 
-// Include the initialization file
 require_once "../includes/init.php";
 
-// Set content type for JSON response
 header('Content-Type: application/json');
 
 try {
-    // Check if user is already logged in
+    // Already logged in?
     if (Security::isAuthenticated()) {
         ob_clean();
         echo json_encode(['success' => false, 'error' => 'Already logged in']);
         exit;
     }
     
-    // Verify CSRF token
+    // Check CSRF
     if (!isset($_POST['csrf_token']) || !Security::verifyCSRFToken($_POST['csrf_token'])) {
         ob_clean();
         echo json_encode(['success' => false, 'error' => 'Invalid security token']);
         exit;
     }
     
-    // Validate required fields
+    // Check required fields
     $requiredFields = ['fname', 'lname', 'email', 'password'];
     foreach ($requiredFields as $field) {
         if (!isset($_POST[$field]) || empty(trim($_POST[$field]))) {
@@ -38,27 +31,27 @@ try {
         }
     }
     
-    // Sanitize input
+    // Clean input
     $fname = Security::sanitizeInput($_POST['fname']);
     $lname = Security::sanitizeInput($_POST['lname']);
     $email = Security::sanitizeInput($_POST['email'], 'email');
     $password = $_POST['password'];
     
-    // Validate email format
+    // Valid email?
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         ob_clean();
         echo json_encode(['success' => false, 'error' => 'Invalid email format']);
         exit;
     }
     
-    // Validate password strength
+    // Check password
     if (strlen($password) < 8) {
         ob_clean();
         echo json_encode(['success' => false, 'error' => 'Password must be at least 8 characters long']);
         exit;
     }
     
-    // Check if email already exists
+    // Email exists?
     $stmt = $pdo->prepare("SELECT unique_id FROM users WHERE email = ?");
     $stmt->execute([$email]);
     if ($stmt->fetch()) {

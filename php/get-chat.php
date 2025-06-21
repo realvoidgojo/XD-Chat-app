@@ -1,13 +1,8 @@
 <?php 
-/**
- * Get Chat Messages API
- * Retrieves chat messages between two users
- */
-
-// Include initialization
+// Get chat messages
 require_once "../includes/init.php";
 
-// Check if user is authenticated
+// Check auth
 if (!Security::isAuthenticated()) {
     echo "Please login first";
     exit;
@@ -24,7 +19,7 @@ if (empty($incoming_id)) {
 $output = "";
 
 try {
-    // Get messages between the two users (PostgreSQL compatible)
+    // Get messages between users
     $sql = "SELECT * FROM messages 
             WHERE (outgoing_msg_id = ? AND incoming_msg_id = ?) 
                OR (outgoing_msg_id = ? AND incoming_msg_id = ?) 
@@ -40,7 +35,7 @@ try {
             $messageTime = date('H:i', strtotime($message['created_at']));
             
             if ($message['outgoing_msg_id'] === $outgoing_id) {
-                // Outgoing message (from current user)
+                // Outgoing message
                 $output .= '<div class="chat outgoing">
                               <div class="details">
                                 <p>' . $messageText . '</p>
@@ -48,7 +43,7 @@ try {
                               </div>
                             </div>';
             } else {
-                // Incoming message (from other user)  
+                // Incoming message
                 $output .= '<div class="chat incoming">
                               <div class="details">
                                 <p>' . $messageText . '</p>

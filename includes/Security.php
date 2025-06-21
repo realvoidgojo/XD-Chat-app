@@ -1,21 +1,13 @@
 <?php
-/**
- * Security Utilities Class
- * XD Chat App
- */
-
+// Security utilities
 class Security {
     
-    /**
-     * Check if user is authenticated
-     */
+    // Check if authenticated
     public static function isAuthenticated() {
         return isset($_SESSION['unique_id']) && !empty($_SESSION['unique_id']);
     }
     
-    /**
-     * Require authentication
-     */
+    // Require auth
     public static function requireAuth($redirectTo = 'login.php') {
         if (!self::isAuthenticated()) {
             header("Location: " . $redirectTo);
@@ -23,9 +15,7 @@ class Security {
         }
     }
     
-    /**
-     * Generate CSRF token
-     */
+    // Generate CSRF token
     public static function generateCSRFToken() {
         if (!isset($_SESSION['CSRF_TOKEN'])) {
             $_SESSION['CSRF_TOKEN'] = bin2hex(random_bytes(32));
@@ -33,16 +23,12 @@ class Security {
         return $_SESSION['CSRF_TOKEN'];
     }
     
-    /**
-     * Verify CSRF token
-     */
+    // Verify CSRF token
     public static function verifyCSRFToken($token) {
         return isset($_SESSION['CSRF_TOKEN']) && hash_equals($_SESSION['CSRF_TOKEN'], $token);
     }
     
-    /**
-     * Sanitize input data
-     */
+    // Sanitize input
     public static function sanitizeInput($input, $type = 'string') {
         if (is_array($input)) {
             return array_map(function($item) use ($type) {
@@ -65,9 +51,7 @@ class Security {
         }
     }
     
-    /**
-     * Validate input data
-     */
+    // Validate input
     public static function validateInput($input, $type, $options = []) {
         switch ($type) {
             case 'email':
@@ -86,9 +70,7 @@ class Security {
         }
     }
     
-    /**
-     * Hash password securely
-     */
+    // Hash password
     public static function hashPassword($password) {
         return password_hash($password, PASSWORD_ARGON2ID, [
             'memory_cost' => 65536, // 64 MB

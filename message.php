@@ -11,7 +11,7 @@
     <section class="chat-area">
       <header>
         <?php 
-                    // Get user_id from either query parameter or from URL path
+          // Get user ID
           $user_id = isset($_GET['user_id']) ? mysqli_real_escape_string($conn, $_GET['user_id']) : 
                      (isset($_SERVER['REQUEST_URI']) && preg_match('/message-(\d+)$/', $_SERVER['REQUEST_URI'], $matches) ? 
                      mysqli_real_escape_string($conn, $matches[1]) : '');

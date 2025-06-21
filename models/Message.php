@@ -1,9 +1,5 @@
 <?php
-/**
- * Message Model
- * XD Chat App
- */
-
+// Message model
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/Security.php';
 
@@ -15,12 +11,10 @@ class Message {
         $this->pdo = $pdo;
     }
     
-    /**
-     * Insert a new message
-     */
+    // Create message
     public function create($outgoingId, $incomingId, $message) {
         try {
-            // Validate and sanitize input
+            // Clean input
             $message = Security::sanitizeInput($message, 'string');
             
             if (empty(trim($message))) {
@@ -49,9 +43,7 @@ class Message {
         }
     }
     
-    /**
-     * Get conversation between two users
-     */
+    // Get conversation
     public function getConversation($userId1, $userId2, $limit = 50, $offset = 0) {
         try {
             $sql = "SELECT m.*, u.fname, u.lname, u.img, m.created_at 
@@ -72,9 +64,7 @@ class Message {
         }
     }
     
-    /**
-     * Get last message between users
-     */
+    // Get last message
     public function getLastMessage($userId1, $userId2) {
         try {
             $sql = "SELECT m.*, u.fname, u.lname 
@@ -95,9 +85,7 @@ class Message {
         }
     }
     
-    /**
-     * Get recent conversations for a user
-     */
+    // Get recent chats
     public function getRecentConversations($userId, $limit = 20) {
         try {
             $sql = "SELECT DISTINCT 
@@ -131,9 +119,7 @@ class Message {
         }
     }
     
-    /**
-     * Mark messages as read
-     */
+    // Mark as read
     public function markAsRead($userId, $otherUserId) {
         try {
             $sql = "UPDATE messages SET is_read = 1 
@@ -148,19 +134,17 @@ class Message {
         }
     }
     
-    /**
-     * Get unread message count
-     */
+    // Get unread count
     public function getUnreadCount($userId, $otherUserId = null) {
         try {
             if ($otherUserId) {
-                // Unread count from specific user
+                // Count from specific user
                 $sql = "SELECT COUNT(*) FROM messages 
                         WHERE incoming_msg_id = ? AND outgoing_msg_id = ? AND is_read = 0";
                 $stmt = $this->pdo->prepare($sql);
                 $stmt->execute([$userId, $otherUserId]);
             } else {
-                // Total unread count
+                // Total unread
                 $sql = "SELECT COUNT(*) FROM messages WHERE incoming_msg_id = ? AND is_read = 0";
                 $stmt = $this->pdo->prepare($sql);
                 $stmt->execute([$userId]);
@@ -174,12 +158,10 @@ class Message {
         }
     }
     
-    /**
-     * Delete a message (soft delete)
-     */
+    // Delete message
     public function delete($messageId, $userId) {
         try {
-            // Only allow user to delete their own messages
+            // Only own messages
             $sql = "UPDATE messages SET is_deleted = 1 
                     WHERE msg_id = ? AND outgoing_msg_id = ?";
             
@@ -192,9 +174,7 @@ class Message {
         }
     }
     
-    /**
-     * Search messages
-     */
+    // Search messages
     public function search($userId, $searchTerm, $limit = 50) {
         try {
             $searchTerm = '%' . $searchTerm . '%';

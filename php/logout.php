@@ -1,13 +1,8 @@
 <?php
-/**
- * Logout Handler
- * XD Chat App
- */
-
-// Initialize application
+// Logout handler
 require_once '../includes/init.php';
 
-// Check if user is logged in
+// Check if logged in
 if (!Security::isAuthenticated()) {
     safeRedirect('../login.php');
 }
@@ -15,20 +10,20 @@ if (!Security::isAuthenticated()) {
 $userId = $_SESSION['unique_id'];
 
 try {
-    // Update user status to offline
+    // Set offline status
     $stmt = $pdo->prepare("UPDATE users SET status = 'Offline now', last_activity = CURRENT_TIMESTAMP WHERE unique_id = ?");
     $stmt->execute([$userId]);
     
-    // Logout user (clear session)
+    // Logout user
     Security::logout();
     
-    // Redirect to login page
+    // Back to login
     safeRedirect('../login.php');
     
 } catch (PDOException $e) {
     error_log("Logout error: " . $e->getMessage());
     
-    // Even if database update fails, still logout the user
+    // Logout anyway
     Security::logout();
     safeRedirect('../login.php');
 }

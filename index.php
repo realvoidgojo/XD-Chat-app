@@ -1,18 +1,12 @@
 <?php 
-/**
- * Signup Page
- * XD Chat App
- */
-
-// Initialize application (session, database, security)
+// Signup page
 require_once 'includes/init.php';
 
-// Redirect if already logged in
+// Redirect if logged in
 if (Security::isAuthenticated()) {
     safeRedirect('users.php');
 }
 
-// Define page title
 define('PAGE_TITLE', 'Signup - XD Chat App');
 ?>
 

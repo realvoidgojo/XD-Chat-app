@@ -1,13 +1,8 @@
 <?php
-/**
- * User Search API
- * Searches users by name with proper error handling
- */
-
-// Include initialization
+// User search API
 require_once "../includes/init.php";
 
-// Check if user is authenticated
+// Check auth
 if (!Security::isAuthenticated()) {
     echo "Please login first";
     exit;
@@ -29,7 +24,7 @@ try {
         exit;
     }
     
-    // Search for users by first name, last name, or full name (PostgreSQL compatible)
+    // Search users by name
     $searchPattern = '%' . $searchTerm . '%';
     $sql = "SELECT unique_id, fname, lname, img, status, last_activity 
             FROM users 
@@ -44,7 +39,7 @@ try {
     
     if (count($users) > 0) {
         foreach ($users as $user) {
-            // Include the user data formatting
+            // Format user data
             include "data.php";
         }
     } else {

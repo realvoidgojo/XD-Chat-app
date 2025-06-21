@@ -1,8 +1,5 @@
 <?php
-/**
- * Error Page Handler
- * Handles 404, 403, and 500 errors
- */
+// Error page handler
 
 $errorCode = $_GET['code'] ?? '404';
 $errorMessage = $_GET['message'] ?? 'Page not found';

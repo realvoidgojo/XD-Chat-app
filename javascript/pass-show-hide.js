@@ -1,18 +1,14 @@
-/**
- * Password Show/Hide Toggle - Enhanced Version
- * Handles password fields with toggle icons
- */
-
+// Password show/hide toggle
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Password toggle script loaded');
     
-    // Function to initialize password toggles
+    // Init password toggles
     function initPasswordToggle() {
-        // Get all password fields
+        // Get password fields
         const passwordFields = document.querySelectorAll('input[type="password"]');
         
         passwordFields.forEach(function(passwordField) {
-            // Check if this field already has a toggle
+            // Check for existing toggle
             const existingToggle = passwordField.parentElement.querySelector('.toggle-password');
             
             if (!existingToggle) {
@@ -31,22 +27,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     z-index: 10;
                 `;
                 
-                // Make the field container relative
+                // Make container relative
                 passwordField.parentElement.style.position = 'relative';
                 
-                // Add toggle icon to field container
+                // Add toggle icon
                 passwordField.parentElement.appendChild(toggleIcon);
                 
-                // Add padding to password field so text doesn't overlap with icon
+                // Add padding for icon
                 passwordField.style.paddingRight = '40px';
             }
         });
         
-        // Add event listeners to all toggle icons
+        // Add event listeners
         const toggleIcons = document.querySelectorAll('.toggle-password');
         
         toggleIcons.forEach(function(toggleIcon) {
-            // Remove existing listeners to prevent duplicates
+            // Remove existing listeners
             toggleIcon.removeEventListener('click', togglePassword);
             toggleIcon.addEventListener('click', togglePassword);
         });
@@ -74,10 +70,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Initialize password toggles
+    // Initialize toggles
     initPasswordToggle();
     
-    // Re-initialize if new content is loaded dynamically
+    // Re-init for dynamic content
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             if (mutation.type === 'childList') {
@@ -94,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Password toggle initialized');
 });
 
-// Fallback for manual initialization
+// Manual init fallback
 window.initPasswordToggle = function() {
     const event = new Event('DOMContentLoaded');
     document.dispatchEvent(event);

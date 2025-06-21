@@ -1,9 +1,5 @@
 <?php
-/**
- * Chat Controller
- * XD Chat App
- */
-
+// Chat controller
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/Security.php';
 require_once __DIR__ . '/../models/Message.php';
@@ -20,20 +16,18 @@ class ChatController {
         $this->user = new User();
     }
     
-    /**
-     * Send a new message
-     */
+    // Send message
     public function sendMessage() {
         header('Content-Type: application/json');
         
         try {
-            // Verify CSRF token
+            // Check CSRF
             if (!isset($_POST['csrf_token']) || !Security::verifyCSRFToken($_POST['csrf_token'])) {
                 echo json_encode(['success' => false, 'error' => 'Invalid security token']);
                 return;
             }
             
-            // Validate required fields
+            // Check fields
             if (!isset($_POST['incoming_id']) || !isset($_POST['message']) || 
                 empty(trim($_POST['message']))) {
                 echo json_encode(['success' => false, 'error' => 'Message and recipient are required']);
@@ -41,23 +35,23 @@ class ChatController {
             }
             
             $incomingId = Security::sanitizeInput($_POST['incoming_id'], 'int');
-            $messageText = $_POST['message']; // Will be sanitized in the model
+            $messageText = $_POST['message']; // Will be sanitized in model
             $outgoingId = $_SESSION['user_id'];
             
-            // Validate incoming user ID
+            // Valid user ID?
             if (!Security::validateInput($incomingId, 'int', ['min_range' => 1])) {
                 echo json_encode(['success' => false, 'error' => 'Invalid recipient']);
                 return;
             }
             
-            // Check if recipient exists
+            // User exists?
             $recipient = $this->user->getById($incomingId);
             if (!$recipient) {
                 echo json_encode(['success' => false, 'error' => 'Recipient not found']);
                 return;
             }
             
-            // Send message
+            // Send it
             $result = $this->message->create($outgoingId, $incomingId, $messageText);
             
             if ($result['success']) {
@@ -72,9 +66,7 @@ class ChatController {
         }
     }
     
-    /**
-     * Get conversation messages
-     */
+    // Get messages
     public function getMessages() {
         header('Content-Type: text/html; charset=UTF-8');
         
@@ -87,7 +79,7 @@ class ChatController {
             $incomingId = Security::sanitizeInput($_POST['incoming_id'], 'int');
             $outgoingId = $_SESSION['user_id'];
             
-            // Validate incoming user ID
+            // Valid user ID?
             if (!Security::validateInput($incomingId, 'int', ['min_range' => 1])) {
                 echo '<div class="text">Invalid user ID</div>';
                 return;
@@ -101,7 +93,7 @@ class ChatController {
                 return;
             }
             
-            // Mark messages as read
+            // Mark as read
             $this->message->markAsRead($outgoingId, $incomingId);
             
             foreach ($messages as $row) {
@@ -133,9 +125,7 @@ class ChatController {
         }
     }
     
-    /**
-     * Search messages
-     */
+    // Search messages
     public function searchMessages() {
         header('Content-Type: application/json');
         
@@ -158,14 +148,12 @@ class ChatController {
         }
     }
     
-    /**
-     * Delete a message
-     */
+    // Delete message
     public function deleteMessage() {
         header('Content-Type: application/json');
         
         try {
-            // Verify CSRF token
+            // Check CSRF
             if (!isset($_POST['csrf_token']) || !Security::verifyCSRFToken($_POST['csrf_token'])) {
                 echo json_encode(['success' => false, 'error' => 'Invalid security token']);
                 return;
@@ -179,7 +167,7 @@ class ChatController {
             $messageId = Security::sanitizeInput($_POST['message_id'], 'int');
             $userId = $_SESSION['user_id'];
             
-            // Validate message ID
+            // Valid message ID?
             if (!Security::validateInput($messageId, 'int', ['min_range' => 1])) {
                 echo json_encode(['success' => false, 'error' => 'Invalid message ID']);
                 return;

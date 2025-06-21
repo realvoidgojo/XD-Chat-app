@@ -21,7 +21,7 @@ inputField.oninput = () => {
     const messageText = inputField.value.trim();
     updateSendButton();
     
-    // Show character count for long messages
+    // Show char count
     if (messageText.length > 800) {
         showCharacterCount(messageText.length);
     } else {
@@ -49,7 +49,7 @@ function updateSendButton() {
         } else if (timeSinceLastSent < minMessageInterval) {
             sendBtn.disabled = true;
             sendBtn.style.cursor = "wait";
-            // Re-enable after cooldown
+            // Re-enable later
             setTimeout(() => {
                 if (!isLoading) {
                     updateSendButton();
@@ -62,7 +62,7 @@ function updateSendButton() {
     }
 }
 
-// Handle Enter key to send message
+// Handle Enter key
 inputField.onkeydown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -87,7 +87,7 @@ function sendMessage() {
         return false;
     }
     
-    // Check rate limiting
+    // Check rate limit
     if (now - lastSentTime < minMessageInterval) {
         showError(`Please wait ${Math.ceil((minMessageInterval - (now - lastSentTime)) / 1000)} seconds before sending another message.`);
         return false;
@@ -98,7 +98,7 @@ function sendMessage() {
     sendBtn.disabled = true;
     sendBtn.style.cursor = "not-allowed";
     
-    // Store original button content
+    // Store original button
     const originalContent = sendBtn.innerHTML;
     sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
     
@@ -112,7 +112,7 @@ function sendMessage() {
                     inputField.value = "";
                     hideCharacterCount();
                     scrollToBottom();
-                    // Immediately fetch new messages
+                    // Get new messages
                     fetchMessages();
                 } else {
                     showError("Failed to send message. Please try again.");
@@ -122,11 +122,11 @@ function sendMessage() {
             }
         }
         
-        // Reset button state
+        // Reset button
         isLoading = false;
         sendBtn.innerHTML = originalContent;
         
-        // Small delay before allowing next message
+        // Small delay
         setTimeout(() => {
             updateSendButton();
         }, 100);
@@ -173,7 +173,7 @@ chatBox.onscroll = () => {
     autoScroll = (chatBox.scrollTop + chatBox.clientHeight + threshold) >= chatBox.scrollHeight;
 }
 
-// Fetch messages periodically
+// Fetch messages
 function fetchMessages() {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "php/get-chat.php", true);
@@ -182,19 +182,19 @@ function fetchMessages() {
             if (xhr.status === 200) {
                 let data = xhr.response;
                 
-                // Count messages to detect new ones
+                // Count messages
                 let messageCount = (data.match(/class="chat"/g) || []).length;
                 
                 chatBox.innerHTML = data;
                 
-                // Only auto-scroll if user hasn't manually scrolled up or if there are new messages
+                // Auto-scroll if needed
                 if (autoScroll || messageCount > lastMessageCount) {
                     scrollToBottom();
                 }
                 
                 lastMessageCount = messageCount;
                 
-                // Remove loading state
+                // Remove loading
                 chatBox.classList.remove("loading");
             }
         }

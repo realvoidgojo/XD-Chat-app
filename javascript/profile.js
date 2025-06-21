@@ -1,8 +1,4 @@
-/**
- * Profile Update JavaScript
- * XD Chat App
- */
-
+// Profile update script
 document.addEventListener('DOMContentLoaded', function() {
     const profileForm = document.getElementById('profileForm');
     
@@ -14,11 +10,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
             
-            // Show loading state
+            // Show loading
             submitBtn.textContent = 'Updating...';
             submitBtn.disabled = true;
             
-            // Clear previous messages
+            // Clear messages
             clearMessages();
             
             fetch('php/update-profile.php', {
@@ -30,12 +26,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     showMessage('Profile updated successfully!', 'success');
                     
-                    // Update UI elements
+                    // Update UI
                     if (data.data) {
                         updateUIElements(data.data);
                     }
                     
-                    // Close modal after a delay
+                    // Close modal
                     setTimeout(() => {
                         document.getElementById('profileModal').style.display = 'none';
                     }, 1500);
@@ -55,20 +51,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Profile image preview
+    // Image preview
     const profileImageInput = document.getElementById('profile-image');
     if (profileImageInput) {
         profileImageInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
-                // Validate file size (5MB max)
+                // Check file size
                 if (file.size > 5 * 1024 * 1024) {
                     showMessage('Image size must be less than 5MB', 'error');
                     this.value = '';
                     return;
                 }
                 
-                // Validate file type
+                // Check file type
                 const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
                 if (!allowedTypes.includes(file.type)) {
                     showMessage('Only JPEG, PNG, and GIF images are allowed', 'error');
@@ -87,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function showMessage(message, type) {
-    // Remove existing messages
+    // Remove existing
     clearMessages();
     
     const messageDiv = document.createElement('div');
@@ -108,7 +104,7 @@ function showMessage(message, type) {
     if (form) {
         form.insertBefore(messageDiv, form.firstChild);
         
-        // Auto-remove after 5 seconds
+        // Auto remove
         setTimeout(() => {
             if (messageDiv.parentNode) {
                 messageDiv.parentNode.removeChild(messageDiv);
@@ -127,7 +123,7 @@ function clearMessages() {
 }
 
 function updateUIElements(data) {
-    // Update header profile info
+    // Update header info
     const headerName = document.querySelector('header .details span');
     if (headerName && data.fname && data.lname) {
         headerName.textContent = `${data.fname} ${data.lname}`;
@@ -138,21 +134,21 @@ function updateUIElements(data) {
         headerStatus.textContent = data.status;
     }
     
-    // Update profile images
+    // Update images
     if (data.image) {
-        // Update header profile image
+        // Update header image
         const headerImage = document.querySelector('header .content img');
         if (headerImage) {
             headerImage.src = `uploads/${data.image}?t=${Date.now()}`;
         }
         
-        // Update modal preview image
+        // Update preview
         const previewImage = document.getElementById('profile-preview');
         if (previewImage) {
             previewImage.src = `uploads/${data.image}?t=${Date.now()}`;
         }
         
-        // Update any other profile images on the page
+        // Update all profile images
         const profileImages = document.querySelectorAll('img[alt="Profile Picture"]');
         profileImages.forEach(img => {
             img.src = `uploads/${data.image}?t=${Date.now()}`;

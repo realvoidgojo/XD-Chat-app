@@ -1,16 +1,11 @@
 <?php
-/**
- * Update User Status
- * XD Chat App
- */
-
-// Include initialization
+// Update user status
 require_once "../includes/init.php";
 
-// Set content type for JSON response
+// JSON response
 header('Content-Type: application/json');
 
-// Check authentication
+// Check auth
 if (!Security::isAuthenticated()) {
     http_response_code(200); // Don't block for testing
     echo json_encode([
@@ -29,11 +24,11 @@ if (!Security::isAuthenticated()) {
 $userId = $_SESSION['unique_id'];
 $status = $_POST['status'] ?? 'Active now';
 
-// Sanitize status
+// Clean status
 $status = Security::sanitizeInput($status);
 
 try {
-    // Update user status
+    // Update status
     $stmt = $pdo->prepare("UPDATE users SET status = ?, last_activity = CURRENT_TIMESTAMP WHERE unique_id = ?");
     $result = $stmt->execute([$status, $userId]);
     
