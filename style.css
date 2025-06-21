@@ -23,7 +23,7 @@ body {
   max-width: 450px;
   width: 100%;
   border-radius: 16px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
@@ -532,7 +532,7 @@ body {
   padding: 12px 15px;
   border-radius: 18px;
   max-width: 75%;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: relative;
 }
 
@@ -623,7 +623,7 @@ body {
   right: 15px;
   font-size: 12px;
   color: #666;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -637,7 +637,7 @@ body {
   color: #fff;
   padding: 12px 20px;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   font-size: 14px;
   display: none;
@@ -649,6 +649,7 @@ body {
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -685,6 +686,7 @@ body {
     opacity: 0;
     transform: translateY(-50px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -839,6 +841,7 @@ body {
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -899,8 +902,13 @@ body {
 }
 
 @keyframes loading {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 /* Responsive Improvements */
@@ -908,22 +916,22 @@ body {
   .online-count {
     padding: 10px 15px;
   }
-  
+
   .online-count span {
     font-size: 13px;
   }
-  
+
   .status-text {
     font-size: 10px !important;
   }
-  
+
   .error-notification {
     top: 10px;
     right: 10px;
     left: 10px;
     max-width: none;
   }
-  
+
   .character-count {
     position: static;
     text-align: center;
@@ -936,36 +944,36 @@ body {
   body {
     padding: 10px;
   }
-  
+
   .wrapper {
     max-width: 100%;
     border-radius: 12px;
   }
-  
+
   .form {
     padding: 20px;
   }
-  
+
   /* Stack name fields on small screens */
   .name-details {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .users {
     padding: 20px;
   }
-  
+
   .chat-area header,
   .typing-area {
     padding: 15px 20px;
   }
-  
+
   .chat-box {
     padding: 15px 20px;
     height: 350px;
   }
-  
+
   /* Adjust toggle button positioning on mobile */
   .field .toggle-password {
     right: 10px;
@@ -983,8 +991,13 @@ body {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Name Details - First Name and Last Name in Same Row */
@@ -1009,7 +1022,7 @@ body {
 .field .toggle-password {
   position: absolute;
   right: 15px;
-  top: 50%;
+  top: 70%;
   transform: translateY(-50%);
   cursor: pointer;
   color: #666;
@@ -1123,6 +1136,7 @@ body {
     opacity: 0;
     transform: translateY(-50px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1204,7 +1218,7 @@ body {
 
 .upload-btn {
   display: inline-block;
-  background: #333;
+  background: #06a806;
   color: white;
   padding: 10px 20px;
   border-radius: 8px;
@@ -1214,7 +1228,8 @@ body {
 }
 
 .upload-btn:hover {
-  background: #555;
+  background: #008000;
+  color: white;
 }
 
 .upload-btn i {
@@ -1317,17 +1332,18 @@ body {
 
 /* Responsive Improvements */
 @media (max-width: 768px) {
+
   .profile-modal .modal-content,
   .user-info-modal .modal-content {
     margin: 10% auto;
     width: 95%;
     padding: 20px;
   }
-  
+
   .name-details {
     flex-direction: column;
   }
-  
+
   .actions {
     gap: 5px;
   }
@@ -1346,6 +1362,11 @@ body {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
